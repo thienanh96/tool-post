@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content='width=device-width, initial-scale=1' name='viewport' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>Tool Post phim</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <h1 style="margin-left:100px;margin-top: 10px;margin-bottom: 30px;">Tool Post Phim</h1>
+
+    <form style="margin-left:100px;margin-top: 10px" id="formm">
+        <div class="form-group" id="nhap-id-phim">
+            <strong>Nhập link bilu:</strong>
+            <input id="link-bilu" class="form-control" type="text" style="width:600px">
+            <button type="button" class="btn btn-primary" style="float: left;margin-left: 516px" id="tao-code">Tạo code</button>
+        </div>
+    </form>
+    <script type="text/javascript">
+        let count = 0;
+        var date = new Date();
+        var dateISO = date.toISOString().replace('2018','2017');
+
+        function layToken() {
+            console.log('lay token')
+            window.open(
+                'https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id=371511567056-f66pd476ppbpmo6qh8ad414vsl3p6h22.apps.googleusercontent.com&redirect_uri=http://www.phim360.net&scope=https://www.googleapis.com/auth/blogger'
+            );
+        }
+
+        function sleep(milliseconds) {
+            var start = new Date().getTime();
+            for (let i = 0; i < 1e15; i++) {
+                if ((new Date().getTime() - start) > milliseconds) {
+                    break;
+                }
+            }
+        }
+
+        function dangPost(e) {
+            console.log('dang-post', count)
+            let stackIndex = 0;
+            let tenPhimArr = [];
+            for (let i = 0; i < count; i++) {
+                console.log('_____________________');
+                sleep(1200);
+                console.log('_____________________');
+                let token = document.getElementById('token').value.trim();
+                if (token === '') return;
+                let html = document.getElementById('code' + i).value;
+                let tenphim = document.getElementById('code-tenphim' + i).value;
+                tenPhimArr.push(tenphim);
+                let label = document.getElementById('code-label' + i).value;
+                let thoigian = document.getElementById('code-time' + i).value;
+                let body = {
+                    kind: "blogger#post",
+                    blog: {
+                        id: "144199127316688870"
+                    },
+                    title: tenphim,
+                    content: html,
+                    labels: label.split(','),
+                    published: thoigian,
+                    customMetaData: "Xem ngay " + tenphim +
+                        " FullHD Vietsub Thuyết minh"
+                }
+                if (html === '') continue;
+                $.ajax({
+                    url: 'https://www.googleapis.com/blogger/v3/blogs/144199127316688870/posts',
+                    type: "POST",
+                    data: JSON.stringify(body),
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        let index = tenPhimArr.indexOf(response.title);
+                        if (index !== -1) {
+                            document.getElementById('code' + index).style.background = 'green';
+                            document.getElementById('code' + index).value = '';
+                            console.log('#####', response);
+                        }
+
+                    }
+                });
+            }
+
+        };
+        $(document).ready(function () {
+            $('#tao-code').click(function (e) {
+                console.log('play')
+                let urll = document.getElementById('link-bilu').value;
+                $.ajax({
+                    url: 'http://localhost:3000/api/phim?url=' + urll,
+                    dataType: "json",
+                    success: function (response) {
+                        for (let post of response) {
+                            $('#formm').append(
+                                '<div id="code-html"  class="form-group"><strong>Copy code này vào chỗ HTML</strong>:<textarea class="form-control" id="code' +
+                                count +
+                                '" rows="4" cols="50" style="width: 800px;height: 500px"></textarea></div>'
+                            )
+                            $('#formm').append(
+                                '<div   class="form-group"><strong>Copy tên phim này vào chỗ Bài đăng</strong><input id="code-tenphim' +
+                                count +
+                                '" class="form-control" style="width:800px" type="text" value="' +
+                                post.name + '"></div>')
+                            $('#formm').append(
+                                '<div   class="form-group"><strong>Copy nhãn này vào chỗ  Label</strong><input id="code-label' +
+                                count +
+                                '" class="form-control" style="width:800px" type="text" value="' +
+                                post.label + '"></div>')
+                            $('#formm').append(
+                                '<div   class="form-group"><strong>Copy nhãn này vào chỗ  Label</strong><input id="code-time' +
+                                count +
+                                '" class="form-control" style="width:800px" type="text" value="' +
+                                dateISO + '"></div>')
+                            $('#formm').append(
+                                '___________________________________________________________________________________________________'
+                            );
+                            document.getElementById('code' + count).value = post.html;
+                            count++;
+                        }
+                        $('#formm').append(
+                            '<button onclick="layToken()" type="button" class="btn btn-primary" style="float: right;margin-right: 1000px" id="lay-token">Lấy token</button>'
+                        );
+                        $('#formm').append(
+                            '<div class="form-group" style="float: left">Paste token vào đây:<textarea class="form-control" rows="4" cols="50" id="token" style="width: 800px"></textarea></div>'
+                        )
+                        $('#formm').append(
+                            '<button onclick="dangPost()" type="button" class="btn btn-primary" style="float: right;margin-right: 1000px" id="dang-post">Post</button>'
+                        );
+
+
+
+                    }
+                });
+
+
+
+            });
+        })
+    </script>
+
+</body>
+
+</html>
