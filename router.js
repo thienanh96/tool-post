@@ -227,7 +227,7 @@ router.get('/phim', function (req, ress, next) {
                     if (!isNaN(property)) {
                         for (let childA of ulTag[property].children) {
                             if (childA.name + '' === 'a') {
-                                await delay(1000);
+                                await delay(2000);
                                 callPhim(childA.attribs.href, (code) => {
                                     if (code !== '') {
                                         posts.push(code);
