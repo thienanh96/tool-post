@@ -96,7 +96,7 @@
                 console.log('play')
                 let urll = document.getElementById('link-bilu').value;
                 $.ajax({
-                    url: '/a/api/phim?url=' + urll,
+                    url: '/api/phim?url=' + urll,
                     dataType: "json",
                     success: function (response) {
                         for (let post of response) {
