@@ -96,7 +96,7 @@
                 console.log('play')
                 let urll = document.getElementById('link-bilu').value;
                 $.ajax({
-                    url: 'http://localhost:3000/api/phim?url=' + urll,
+                    url: 'https://sucvat.herokuapp.com/api/phim?url=' + urll,
                     dataType: "json",
                     success: function (response) {
                         for (let post of response) {
