@@ -118,7 +118,10 @@ var callPhim = async (href, cb) => {
             let filmContent = $('.film-content').first().children();
             let linkXem = $('.poster').first().children();
             linkXem = linkXem['0'].attribs.href;
-            let tenphim = filmContent['0'].children[0].children[0].data.replace(',', ' - ');
+            let tenphim = '';
+            if(filmContent['0'].children[0].children[0].data){
+                tenphim = filmContent['0'].children[0].children[0].data.replace(',', ' - ');
+            }
             let name0 = tenphim.toLowerCase().split('-');
             let name1 = name0[0].trim(); //ten tieng viet
             let name2;
